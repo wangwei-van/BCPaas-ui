@@ -6,6 +6,14 @@ export default {
     isFetching: false,
     isLogged: cookie.get('token') ? true : false
   },
+  apps: {
+    isFetching: false,
+    data: {
+      deploymentList: {
+        deployments: []
+      }
+    }
+  },
   users: {
     isFetching: false,
     meta: {

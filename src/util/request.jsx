@@ -1,5 +1,7 @@
+import { browserHistory } from 'react-router';
 import fetch from 'isomorphic-fetch';
 import { notification } from 'antd';
+import cookie from 'js-cookie';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -21,6 +23,11 @@ const codeMessage = {
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response;
+  }
+  if (response.status === 401) {
+    cookie.remove('token');
+    browserHistory.push('/login');
+    return Promise.reject();
   }
   const errortext = codeMessage[response.status] || response.statusText;
   notification.error({

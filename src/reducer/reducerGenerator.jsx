@@ -20,12 +20,7 @@ export default function reducersGenerate(actionType, initialState, optionsHandle
       return {
         isFetching: false,
         isFulfilled: true,
-        data: action.payload.data,
-        meta:   {
-          total: action.payload.meta.total,
-          perPage: action.payload.meta.per_page,
-          page: action.payload.meta.page
-        }
+        data: action.payload,
       };
     };
 

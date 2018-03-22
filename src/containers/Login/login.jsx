@@ -8,6 +8,21 @@ import './login.scss';
 
 const FormItem = Form.Item;
 
+function mapStateToProps (state) {
+  const {auth} = state;
+  return {
+    auth
+  }
+}
+
+function mapDispatchToProps (dispatch) {
+  return {
+    submitHandle: (credential) => {
+      dispatch(loginUser(credential))
+    }
+  }
+}
+
 class LoginForm extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
@@ -60,23 +75,6 @@ class LoginForm extends React.Component {
         </FormItem>
       </Form>
     );
-  }
-}
-
-
-
-function mapStateToProps (state) {
-  const {auth} = state;
-  return {
-    auth
-  }
-}
-
-function mapDispatchToProps (dispatch) {
-  return {
-    submitHandle: (credential) => {
-      dispatch(loginUser(credential))
-    }
   }
 }
 

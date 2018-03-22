@@ -26,11 +26,15 @@
   padding: 10px 20px 20px;
   .ant-breadcrumb {
     margin-bottom: 10px;
+    +div {
+      flex: 1 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+    }
   }
-  >.wrapper {
-    flex: 1 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 5px;
-  }
+}
+
+.toolbar {
+  margin-bottom: 20px;
 }

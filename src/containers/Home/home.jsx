@@ -13,6 +13,21 @@ import './home.scss'
 
 const { Content } = Layout;
 
+function mapStateToProps (state) {
+  const {auth, routing} = state;
+  return {
+    isLogged: auth.isLogged
+  }
+}
+
+function mapDispatchToProps (dispatch) {
+  return {
+    handleLogout: () => {
+      dispatch(logout());
+    }
+  }
+}
+
 class App extends React.Component {
   constructor (props) {
     super(props);
@@ -60,21 +75,6 @@ class App extends React.Component {
       </Layout>
     )
   };
-}
-
-function mapStateToProps (state) {
-  const {auth, routing} = state;
-  return {
-    isLogged: auth.isLogged
-  }
-}
-
-function mapDispatchToProps (dispatch) {
-  return {
-    handleLogout: () => {
-      dispatch(logout());
-    }
-  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
