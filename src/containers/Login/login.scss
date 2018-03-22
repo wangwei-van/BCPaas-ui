@@ -1,0 +1,27 @@
+// .login-form {
+//   position: relative;
+//   width: 800px;
+//   height: 100%;
+//   margin: 0 auto;
+//   form {
+//     position: absolute;
+//     top: 50%;
+//     transform: translate(0, -50%);
+//     width: 100%;
+//     background-color: #f1f1f1;
+//     padding: 20px;
+//   }
+// }
+
+.login-form {
+  position: relative;
+  max-width: 300px;
+  margin: 0 auto;
+  top: 30%;
+}
+.login-form-forgot {
+  float: right;
+}
+.login-form-button {
+  width: 100%;
+}
