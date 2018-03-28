@@ -1,4 +1,3 @@
-// import { LOGIN } from './../constants/actionTypes';
 import initialState from './initialState';
 import reducersGenerate from './reducerGenerator';
 
@@ -14,8 +13,7 @@ export default reducersGenerate(LOGIN, initialState.auth, {
   'LOGIN_FULFILLED': (state, action) => {
     return Object.assign({}, state, {
       isFetching: false,
-      isLogged: true,
-      user: action.payload
+      isLogged: true
     });
   },
   'LOGIN_REJECTED': (state, action) => {

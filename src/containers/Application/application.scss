@@ -1,0 +1,27 @@
+.application-list {
+  .table-filter-dropdown {
+    background-color: #fff;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    input {
+      width: 200px;
+      margin-right: 15px;
+    }
+  }
+  .app-status-bar {
+    .ant-progress {
+      width: 150px;
+      margin-right: 10px;
+    }
+  }
+}
+
+.address-tips {
+  a, span {
+    display: block;
+  }
+  a {
+    margin-left: 10px;
+  }
+}

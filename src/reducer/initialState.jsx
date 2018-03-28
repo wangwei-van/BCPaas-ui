@@ -8,11 +8,7 @@ export default {
   },
   apps: {
     isFetching: false,
-    data: {
-      deploymentList: {
-        deployments: []
-      }
-    }
+    data: {}
   },
   users: {
     isFetching: false,

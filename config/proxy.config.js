@@ -15,6 +15,14 @@ module.exports = {
       },
       secure: false,
       changeOrigin: true
+    },
+    '/image/**': {
+      target: "http://10.139.15.158/",
+      pathRewrite: {
+        '^/image/': ''
+      },
+      secure: false,
+      changeOrigin: true
     }
   }
 }

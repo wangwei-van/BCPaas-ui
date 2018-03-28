@@ -49,7 +49,7 @@ function checkStatus(response) {
  */
 export default function request(url, options) {
   const defaultOptions = {
-    credentials: 'credentials',
+    credentials: 'include',
   };
   const newOptions = { ...defaultOptions, ...options };
   if (newOptions.method === 'POST' || newOptions.method === 'PUT') {
@@ -59,7 +59,9 @@ export default function request(url, options) {
         'Content-Type': 'application/json; charset=utf-8',
         ...newOptions.headers,
       };
-      newOptions.body = JSON.stringify(newOptions.body);
+      if (newOptions.headers['Content-Type'].indexOf('application/json') !== -1) {
+        newOptions.body = JSON.stringify(newOptions.body);
+      }
     } else {
       // newOptions.body is FormData
       newOptions.headers = {

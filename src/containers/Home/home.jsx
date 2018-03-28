@@ -28,7 +28,7 @@ function mapDispatchToProps (dispatch) {
   }
 }
 
-class App extends React.Component {
+class Home extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -56,12 +56,6 @@ class App extends React.Component {
   }
 
   render () {
-    const userMenu = (
-      <Menu onClick={this.logout}>
-        <Menu.Item key="userInfo">用户中心</Menu.Item>
-        <Menu.Item key="logout">注销</Menu.Item>
-      </Menu>
-    );
     return (
       <Layout style={{ height:'100%' }}>
         <SideBar collapsed={this.state.collapsed} />
@@ -77,4 +71,4 @@ class App extends React.Component {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
