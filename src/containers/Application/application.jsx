@@ -2,15 +2,17 @@ import React, { Component }  from 'react';
 import { connect } from 'react-redux';
 
 import { Table, Button, Icon, Message, Input, Tooltip, Progress } from 'antd';
+import cookie from 'js-cookie';
 import { getAppList } from 'Actions/appAction';
 import AuthHoc from 'Components/authHoc'
 import _ from 'lodash';
 import './application.scss';
 
 function mapStateToProps (state) {
-  const { apps } = state;
+  const { apps, home } = state;
   return {
-    apps: apps.data.apps
+    apps: apps.data.apps,
+    namespace: home.namespace
   }
 }
 
@@ -56,10 +58,32 @@ class Application extends Component {
     return data;
   }
 
+  startPool = (namespace) => {
+    this.props.getAppList(namespace);
+    this.interval = setInterval((function () {
+      this.props.getAppList(namespace)
+    }).bind(this), 20000);
+  }
+
+  stopPool = () => {
+    clearInterval(this.interval);
+  }
+
   componentWillReceiveProps (nextProps) {
     if (this.state.initLoading && !nextProps.isFetching) {
       this.setState({initLoading: false});
     }
+    
+    if (!_.isEqual(nextProps.namespace, this.props.namespace)) {
+      this.setState({initLoading: true});
+      const { namespace } = nextProps;
+      this.stopPool();
+      this.startPool(namespace);
+    }
+
+    /**
+     * TODO: lodash.isEqual好像不能判断嵌套对象是否相等，需要考虑其他方法
+     */
     if(!_.isEqual(nextProps.apps, this.props.apps)) {
       this.setState({
         data: this.getAppData(nextProps.apps)
@@ -68,14 +92,12 @@ class Application extends Component {
   }
 
   componentDidMount () {
-    this.props.getAppList('kube-system');
-    this.interval = setInterval((function () {
-      this.props.getAppList('kube-system')
-    }).bind(this), 20000);
+    const { namespace } = this.props;
+    this.startPool(namespace);
   }
 
   componentWillUnmount () {
-    clearInterval(this.interval);
+    this.stopPool();
   }
 
   createApp = () => {
@@ -105,18 +127,7 @@ class Application extends Component {
   }
 
   render () {
-    const CreateBtn = AuthHoc(
-      <Button className="primary" onClick={this.createApp}><Icon type="plus" />创建应用</Button>,
-      'APP-CREATE'
-    );
-    const EditBtn = AuthHoc(
-      <Button onClick={this.editApp}><Icon type="edit" />编辑应用</Button>,
-      'APP-EDIT'
-    );
-    const DeleteBtn = AuthHoc(
-      <Button><Icon type="delete" />删除应用</Button>,
-      'APP-DELETE'
-    );
+    const HocBtn = AuthHoc(Button);
 
     const columns = [{
       title: 'Name',
@@ -282,9 +293,9 @@ class Application extends Component {
     return (
       <div className="application-list">
         <div className="toolbar">
-          <CreateBtn />
-          <EditBtn />
-          <DeleteBtn />
+          <HocBtn className="primary" onClick={this.createApp} auth={4}><Icon type="plus" />创建应用</HocBtn>
+          <HocBtn className="primary" onClick={this.editApp} auth={8}><Icon type="edit" />编辑应用</HocBtn>
+          <HocBtn className="primary" auth={7}><Icon type="delete" />删除应用</HocBtn>
         </div>
 
         <Table

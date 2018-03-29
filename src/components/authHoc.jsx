@@ -1,13 +1,21 @@
 import React from 'react';
-import { permission } from 'Constants/permission';
+import PropTypes from 'prop-types';
+import api from 'Constants/api';
 
-export default (Component, auth) => {
-  return class extends React.Component {
+export default (Component) => {
+  class WrappedComponent extends React.Component {
     render () {
-      if (permission.indexOf(auth) === -1) {
+      const {auth, ...others} = this.props;
+      if (api.ruleArr.indexOf(auth) === -1) {
         return null;
       }
-      return Component;
+      return <Component {...others} />;
     }
   }
+
+  WrappedComponent.propTypes = {
+    auth: PropTypes.number.isRequired
+  }
+
+  return WrappedComponent; 
 }

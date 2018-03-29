@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 class Wrapper extends Component {
   render () {
     return (
-      <div className="wrapper">
+      <React.Fragment>
         {this.props.children}
-      </div>
+      </React.Fragment>
     )
   }
 }

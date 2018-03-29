@@ -6,6 +6,11 @@ export default {
     isFetching: false,
     isLogged: cookie.get('token') ? true : false
   },
+  home: {
+    isFetching: false,
+    authRequired: false,
+    namespace: cookie.get('namespace')
+  },
   apps: {
     isFetching: false,
     data: {}

@@ -1,18 +1,22 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Menu, Icon } from 'antd';
 import { Link } from 'react-router';
 import { util } from 'Util/util';
 
 const isMenuItemAuth = (permission, auth) => {
-  if (!util.isString(auth)) {
+  if (!auth) {
     return true;
   }
   return permission.indexOf(auth) !== -1;
 }
 
 const isSubMenuAuth = (permission, auth) => {
-  if (!util.isArray(auth)) {
+  if (!auth) {
     return true;
+  }
+  if (!util.isArray(auth)) {
+    return permission.indexOf(auth) !== -1;
   }
   for (let i=0,len=auth.length; i<len; i++) {
     if (permission.indexOf(auth[i]) !== -1) {
@@ -76,6 +80,11 @@ class MenuItem extends React.Component {
       </Menu>
     )
   }
+}
+
+MenuItem.propTypes = {
+  menus: PropTypes.array.isRequired,
+  permission: PropTypes.array.isRequired
 }
 
 export default MenuItem;

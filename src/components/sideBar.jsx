@@ -2,8 +2,7 @@ import React from 'react';
 import { Layout } from 'antd';
 
 import MenuItem from 'Components/menuItem';
-import { menus } from 'Constants/menu';
-import { permission } from 'Constants/permission';
+import api from 'Constants/api';
 const { Sider } = Layout;
 
 class SideBar extends React.Component {
@@ -74,8 +73,8 @@ class SideBar extends React.Component {
       >
         <div className="logo" />
         <MenuItem
-          permission={permission}
-          menus={menus}
+          permission={api.ruleArr}
+          menus={api.menus}
           theme="dark"
           mode="inline"
           selectedKeys={[this.state.selectedKeys]}

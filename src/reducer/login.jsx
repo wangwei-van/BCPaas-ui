@@ -22,10 +22,4 @@ export default reducersGenerate(LOGIN, initialState.auth, {
       isLogged: false
     });
   },
-  'LOGOUT': (state, action) => {
-    return Object.assign({}, state, {
-      isFetching: false,
-      isLogged: false
-    })
-  }
 });

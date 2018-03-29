@@ -2,28 +2,28 @@ import React  from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import cookie from 'js-cookie';
-import { Layout, Menu, Breadcrumb } from 'antd';
+import { Layout, Menu, Breadcrumb, Spin } from 'antd';
 
 import Routes from '../../routes';
 import Login from 'Containers/Login/login';
 import HeadBar from 'Components/headBar';
 import SideBar from 'Components/sideBar';
 import { logout } from 'Actions/authAction';
+import { setNamespace } from 'Actions/homeAction';
+import api from 'Constants/api';
 import './home.scss'
 
 const { Content } = Layout;
 
 function mapStateToProps (state) {
-  const {auth, routing} = state;
-  return {
-    isLogged: auth.isLogged
-  }
+  const { home } = state;
+  return { home }
 }
 
 function mapDispatchToProps (dispatch) {
   return {
-    handleLogout: () => {
-      dispatch(logout());
+    changeNs: (ns) => {
+      dispatch(setNamespace(ns));
     }
   }
 }
@@ -32,7 +32,9 @@ class Home extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      collapsed: false
+      collapsed: false,
+      namespace: cookie.get('namespace'),
+      username: cookie.get('username')
     }
   }
 
@@ -48,25 +50,47 @@ class Home extends React.Component {
   }
 
   logout = ({key}) => {
-    if (key === "2") {
+    if (key === "logout") {
       cookie.remove('token');
+      cookie.remove('namespace');
       this.props.router.push('/login');
-      this.props.handleLogout();
     }
   }
 
+  handleNs = ({key}) => {
+    if (this.state.namespace === key) {
+      return;
+    }
+    cookie.set('namespace', key);
+    this.setState({
+      namespace: key
+    });
+    this.props.changeNs(key);
+  }
+  
+
   render () {
     return (
-      <Layout style={{ height:'100%' }}>
-        <SideBar collapsed={this.state.collapsed} />
-        <Layout>
-          <HeadBar collapsed={this.state.collapsed} toggle={this.toggle} logout={this.logout} />
-          <Content className="app">
-            <Breadcrumb routes={this.props.routes} itemRender={this.renderBC} />
-            { this.props.children }
-          </Content>
+      <Spin spinning={this.props.home.isFetching}>
+        <Layout style={{ height:'100%' }}>
+          <SideBar collapsed={this.state.collapsed} />
+          <Layout>
+            <HeadBar
+              collapsed={this.state.collapsed}
+              toggle={this.toggle}
+              username={this.state.username}
+              logout={this.logout}
+              namespaceArr={api.namespaceArr}
+              namespace={this.state.namespace}
+              changeNs={this.handleNs}
+            />
+            <Content className="app-container">
+              <Breadcrumb routes={this.props.routes} itemRender={this.renderBC} />
+              { this.props.children }
+            </Content>
+          </Layout>
         </Layout>
-      </Layout>
+      </Spin>
     )
   };
 }
