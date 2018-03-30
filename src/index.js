@@ -6,7 +6,7 @@ import {browserHistory} from 'react-router';
 import {syncHistoryWithStore} from 'react-router-redux';
 import {Provider} from 'react-redux';
 
-import configureStore from './store';
+import store from 'Store';
 import Routes from './routes';
 import './index.scss';
 
@@ -28,7 +28,6 @@ Root.propTypes = {
   store: PropTypes.object.isRequired
 }
 
-const store = configureStore();
 const history = syncHistoryWithStore(browserHistory, store);
 render(
   <Root history={history} store={store} />,

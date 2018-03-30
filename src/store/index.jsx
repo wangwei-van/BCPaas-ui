@@ -1,5 +1,13 @@
+import prodStore from './store.prod';
+import devStore from './store.dev';
+import initialState from '../reducer/initialState';
+
+let store;
+
 if (process.env.NODE_ENV === 'production') {
-  module.exports = require('./store.prod');
+  store = prodStore(initialState);
 } else {
-  module.exports = require('./store.dev');
+  store = devStore(initialState);
 }
+
+export default store;

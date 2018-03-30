@@ -1,18 +1,15 @@
 import cookie from 'js-cookie';
+import store from 'Store';
 
-import configureStore from '../store';
 import api from 'Constants/api';
-import namespaceService from '../services/namespaceService';
-import privilegeService from '../services/privilegeService';
-
-const store = configureStore();
+import namespaceService from 'Services/namespaceService';
+import privilegeService from 'Services/privilegeService';
 
 // 获取namespaces、authRules
 export const getAuthRule = () => {
   return {
     type: 'GETAUTHRULE',
     payload: new Promise(async (resolve) => {
-      const state = store.getState();
       let isAdmin = cookie.get('admin') == 'true',
         namespace = cookie.get('namespace') || '',
         namespaceArr = [],
@@ -41,7 +38,11 @@ export const getAuthRule = () => {
           }
         });
       }
-      api.namespaceArr = namespaceArr;
+      /*
+       * namespace和namespaceArr 会受后面域管理模块影响，故放在state中
+       * 同时方便在header中切换ns时，触发对应主模块重新请求
+      */
+      store.dispatch(setNamespaceArr(namespaceArr));
 
       if (namespaceArr.length === 0) {
         namespace = '';
@@ -50,15 +51,16 @@ export const getAuthRule = () => {
       }
       cookie.remove('deletedNamespace');
       cookie.set('namespace', namespace);
+      store.dispatch(setNamespace(namespace));
 
-      let ruleList = await privilegeService.getAvailRules(cluster, namespace, username);
 
       /**
        * routeFilter 根据名称获取路由路径
        * ruleArr 控制操作按钮
        * routeArr 控制路由
        */
-      
+      let ruleList = await privilegeService.getAvailRules(cluster, namespace, username);
+
       let routeFilter = api.routeFilter,
         ruleArr = [], routeArr = [], projectAdminLabel = false;
       ruleList.forEach(function (rule) {
@@ -80,6 +82,13 @@ export const getAuthRule = () => {
 
       return resolve('');
     })
+  }
+}
+
+export const setNamespaceArr = (arr) => {
+  return {
+    type: 'SETNAMESPACEARR',
+    payload: arr
   }
 }
 

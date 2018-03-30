@@ -1,11 +1,11 @@
 import React, { Component }  from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
+import _ from 'lodash';
 
 import { Table, Button, Icon, Message, Input, Tooltip, Progress } from 'antd';
-import cookie from 'js-cookie';
 import { getAppList } from 'Actions/appAction';
-import AuthHoc from 'Components/authHoc'
-import _ from 'lodash';
+import AuthHoc from 'Components/authHoc';
 import './application.scss';
 
 function mapStateToProps (state) {
@@ -24,16 +24,25 @@ function mapDispatchToProps (dispatch) {
   }
 }
 
+/* 将过滤和分页信息保存在当前state中，方便下一级路由跳转回来时保持之前的状态 */
 
 class Application extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      visible: {},
+      visible: {}, /* 某条记录类型、描述tooltip显示 */
       data: [],
       initLoading: true,
-      nameFilter: '',
-      filterVisible: false,
+      filterInfo: {
+        name: {
+          value: '',
+          visible: false
+        }
+      },
+      pagination: {
+        showSizeChanger: true,
+        showQuickJumper: true
+      },
       sortInfo: {}
     };
   }
@@ -41,14 +50,14 @@ class Application extends Component {
   handleFilter (data, key, val) {
     if (key === 'name') {
       return data.filter(item => {
-        return val === '' ? true : item.objectMeta.name.indexOf(val) !== -1;
+        return !val ? true : item.objectMeta.name.indexOf(val) !== -1;
       });
     }
     return [];
   }
 
   getAppData (data) {
-    data = this.handleFilter(data, 'name', this.state.nameFilter);
+    data = this.handleFilter(data, 'name', this.state.filterInfo.name.value);
 
     data = data.map((item) => {
       item.key = item.objectMeta.namespace + item.objectMeta.name;
@@ -109,8 +118,13 @@ class Application extends Component {
   }
 
   handleNameChange = (e) => {
+    var filterInfo = Object.assign({}, this.state.filterInfo, {
+      name: {
+        value: e.target.value
+      }
+    })
     this.setState({
-      nameFilter: e.target.value
+      filterInfo
     })
   }
 
@@ -120,8 +134,25 @@ class Application extends Component {
     });
   }
 
+  showDesc = (key) => {
+    let initVisible = Object.assign({}, this.state.visible);
+    initVisible[key] = true;
+    this.setState({
+      visible: initVisible
+    })
+  }
+
+  hideDesc = (key) => {
+    let initVisible = Object.assign({}, this.state.visible);
+    initVisible[key] = false;
+    this.setState({
+      visible: initVisible
+    })
+  }
+
   handleTableChange = (pagination, filters, sorter) => {
     this.setState({
+      pagination: pagination,
       sortInfo: sorter
     })
   }
@@ -138,16 +169,21 @@ class Application extends Component {
           <Input
             ref={ele => this.nameSearch = ele}
             placeholder="搜索应用"
-            value={this.state.nameFilter}
+            value={this.state.filterInfo.name.value}
             onChange={this.handleNameChange}
             onPressEnter={this.confirmNameFilter}
           />
           <Button type="primary" onClick={this.confirmNameFilter}>搜索</Button>
         </div>
       ),
-      filterDropdownVisible: this.state.filterVisible,
+      filterDropdownVisible: this.state.filterInfo.name.visible,
       onFilterDropdownVisibleChange: (visible) => {
-        this.setState({filterVisible: visible}, () => {
+        var filterInfo = Object.assign({}, this.state.filterInfo, {
+          name: {
+            visible
+          }
+        });
+        this.setState({filterInfo}, () => {
           this.nameSearch && this.nameSearch.focus();
         })
       },
@@ -162,27 +198,29 @@ class Application extends Component {
         )
         return (
           <Tooltip placement="right" title={tips} visible={this.state.visible[record.key]} >
-            <a href="#">{text}</a>
+            <Link to={`/appManage/application/${text}`} onClick={this.hideDesc.bind(this, record.key)} >{text}</Link>
           </Tooltip>
         )
       }
     },{
       title: 'CPU',
+      dataIndex: 'cpuUsage',
       key: 'cpu',
-      render: (text) => {
+      render: (text, record) => {
         return (
           <span>
-          { (text.cpuUsage == 0 ? text.cpuUsage : (text.cpuUsage).toFixed(4)) + ' / ' + (text.totalCpu ? text.totalCpu : '无限制') }
+          { (text == 0 ? text : (text).toFixed(4)) + ' / ' + (record.totalCpu ? record.totalCpu : '无限制') }
           </span>
         )
       }
     },{
       title: 'Memory',
+      dataIndex: 'memoryUsage',
       key: 'memory',
-      render: (text) => {
+      render: (text, record) => {
         return (
           <span>
-            { (text.memoryUsage == 0 ? text.memoryUsage : (text.memoryUsage).toFixed(4)) + ' / ' + (text.totalMemory ? text.totalMemory : '无限制') }
+            { (text == 0 ? text : (text).toFixed(4)) + ' / ' + (record.totalMemory ? record.totalMemory : '无限制') }
           </span>
         )
       }
@@ -250,10 +288,11 @@ class Application extends Component {
       }
     },{
       title: 'Status',
+      dataIndex: 'runningStatus',
       key: 'status',
-      render: (text, record) => {
+      render: (text) => {
         let icon;
-        switch (record.runningStatus) {
+        switch (text) {
           case 'running': {
             icon = <Icon type="smile-o" style={{ color: 'green' }} />
             break;
@@ -271,7 +310,7 @@ class Application extends Component {
           <span>
             {icon}
             <span style={{ marginLeft: '10px' }}>
-              {record.runningStatus}
+              {text}
             </span>
           </span>
         )
@@ -289,6 +328,13 @@ class Application extends Component {
       }
     }]
 
+    if (this.props.children) {
+      return (
+        <React.Fragment>
+        {this.props.children}
+        </React.Fragment>
+      )
+    }
 
     return (
       <div className="application-list">
@@ -301,28 +347,16 @@ class Application extends Component {
         <Table
           onRow={(record) => {
             return {
-              onMouseOver: () => {
-                let initVisible = Object.assign({}, this.state.visible);
-                initVisible[record.key] = true;
-                this.setState({
-                  visible: initVisible
-                })
-              },
-              onMouseLeave: () => {
-                let initVisible = Object.assign({}, this.state.visible);
-                initVisible[record.key] = false;
-                this.setState({
-                  visible: initVisible
-                })
-              }
+              onMouseOver: () => this.showDesc(record.key),
+              onMouseLeave: () => this.hideDesc(record.key)
             }
           }}
           loading={this.state.initLoading}
           dataSource={this.state.data}
           columns={columns}
+          pagination={this.state.pagination}
           onChange={this.handleTableChange}
         />
-        
       </div>
     )
   }

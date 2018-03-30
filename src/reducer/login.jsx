@@ -6,20 +6,17 @@ const LOGIN = 'LOGIN';
 export default reducersGenerate(LOGIN, initialState.auth, {
   'LOGIN_PENDING': (state) => {
     return Object.assign({}, state, {
-      isFetching: true,
-      isLogged: false
+      isFetching: true
     });
   },
   'LOGIN_FULFILLED': (state, action) => {
     return Object.assign({}, state, {
-      isFetching: false,
-      isLogged: true
+      isFetching: false
     });
   },
   'LOGIN_REJECTED': (state, action) => {
     return Object.assign({}, state, {
-      isFetching: false,
-      isLogged: false
+      isFetching: false
     });
   },
 });

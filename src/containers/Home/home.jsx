@@ -4,13 +4,10 @@ import { Link } from 'react-router';
 import cookie from 'js-cookie';
 import { Layout, Menu, Breadcrumb, Spin } from 'antd';
 
-import Routes from '../../routes';
 import Login from 'Containers/Login/login';
 import HeadBar from 'Components/headBar';
 import SideBar from 'Components/sideBar';
-import { logout } from 'Actions/authAction';
 import { setNamespace } from 'Actions/homeAction';
-import api from 'Constants/api';
 import './home.scss'
 
 const { Content } = Layout;
@@ -33,14 +30,13 @@ class Home extends React.Component {
     super(props);
     this.state = {
       collapsed: false,
-      namespace: cookie.get('namespace'),
       username: cookie.get('username')
     }
   }
 
   renderBC = (route, params, routes, paths) => {
     const last = routes.indexOf(route) === routes.length - 1;
-    return (last || route.noHref) ? <span>{route.breadcrumbName}</span> : <Link to={paths.join('/')}>{route.breadcrumbName}</Link>;
+    return (last || route.noHref) ? <span>{route.breadcrumbName}</span> : <Link to={'/' + paths.join('/')}>{route.breadcrumbName}</Link>;
   }
 
   toggle = () => {
@@ -52,19 +48,15 @@ class Home extends React.Component {
   logout = ({key}) => {
     if (key === "logout") {
       cookie.remove('token');
-      cookie.remove('namespace');
       this.props.router.push('/login');
     }
   }
 
   handleNs = ({key}) => {
-    if (this.state.namespace === key) {
+    if (this.props.namespace === key) {
       return;
     }
     cookie.set('namespace', key);
-    this.setState({
-      namespace: key
-    });
     this.props.changeNs(key);
   }
   
@@ -80,8 +72,8 @@ class Home extends React.Component {
               toggle={this.toggle}
               username={this.state.username}
               logout={this.logout}
-              namespaceArr={api.namespaceArr}
-              namespace={this.state.namespace}
+              namespaceArr={this.props.home.namespaceArr}
+              namespace={this.props.home.namespace}
               changeNs={this.handleNs}
             />
             <Content className="app-container">

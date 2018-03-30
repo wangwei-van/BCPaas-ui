@@ -32,7 +32,7 @@ let api = {
     '查看概况': '/dashboard',
     '查看应用': '/appManage/application',
     '创建应用': '/appManage/application/create',
-    '修改应用': '/appManage/application/detail',
+    '修改应用': '/appManage/application/:name',
 
     '查看应用日志': '/operationManage/log/app',
     // '查看负载均衡器日志': '/operationManage/log/ingress',

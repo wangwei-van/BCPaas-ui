@@ -3,25 +3,25 @@ import cookie from 'js-cookie';
 
 export default {
   auth: {
-    isFetching: false,
-    isLogged: cookie.get('token') ? true : false
+    isFetching: false
   },
   home: {
     isFetching: false,
     authRequired: false,
-    namespace: cookie.get('namespace')
+    namespace: cookie.get('namespace'),
+    namespaceArr: []
   },
   apps: {
     isFetching: false,
     data: {}
   },
-  users: {
-    isFetching: false,
-    meta: {
-      total: 0,
-      perPage: 10,
-      page: 1
-    },
-    data: []
-  }
+  // users: {
+  //   isFetching: false,
+  //   meta: {
+  //     total: 0,
+  //     perPage: 10,
+  //     page: 1
+  //   },
+  //   data: []
+  // }
 };

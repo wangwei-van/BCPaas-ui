@@ -26,5 +26,10 @@ export default reducersGenerate(GETAUTHRULE, initialState.home, {
     return Object.assign({}, state, {
       namespace: action.payload
     })
+  },
+  'SETNAMESPACEARR': (state, action) => {
+    return Object.assign({}, state, {
+      namespaceArr: action.payload
+    })
   }
 });
